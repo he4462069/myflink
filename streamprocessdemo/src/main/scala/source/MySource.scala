@@ -6,7 +6,7 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction
 import scala.collection.immutable
 import scala.util.Random
 
-class Mysource extends SourceFunction[SensorReading]{
+class MySource extends SourceFunction[SensorReading]{
 
   //数据源是否在正常运行
   var isRunning:Boolean= true;
