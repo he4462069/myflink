@@ -1,15 +1,9 @@
 package flinksql
 
-import java.util
-
-import bean.SensorReading
-import org.apache.flink.api.common.typeinfo.TypeInfo
 import org.apache.flink.streaming.api.scala._
-import org.apache.flink.table.api.{DataTypes, EnvironmentSettings, Table}
 import org.apache.flink.table.api.scala._
-import org.apache.flink.table.descriptors.{ConnectorDescriptor, Csv, FileSystem, OldCsv, Schema}
-import org.apache.flink.table.types.DataType
-import org.apache.flink.types.Row
+import org.apache.flink.table.api.{DataTypes, EnvironmentSettings, Table}
+import org.apache.flink.table.descriptors.{Csv, FileSystem, Schema}
 
 object sqlFirstDemo {
   def main(args: Array[String]): Unit = {
