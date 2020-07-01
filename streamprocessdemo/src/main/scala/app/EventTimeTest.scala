@@ -27,7 +27,9 @@ object EventTimeTest {
       }
     })
 
-    streamWithEventTime
+    //streamWithEventTime
+
+    env.execute()
 
 
 
