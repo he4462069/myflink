@@ -2,13 +2,16 @@ package CEP
 
 import java.util
 
+import org.apache.flink.api.common.functions.RuntimeContext
 import org.apache.flink.cep.PatternSelectFunction
+import org.apache.flink.cep.functions.PatternProcessFunction
 import org.apache.flink.cep.scala.{CEP, PatternStream}
 import org.apache.flink.cep.scala.pattern.Pattern
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.util.Collector
 
 case class LoginEvent(userId: Long, ip: String, eventType: String, eventTime: Long)
 
@@ -42,7 +45,10 @@ object LoginFailWithCEP {
 
     val patternStream: PatternStream[LoginEvent] = CEP.pattern(loginEventStream.keyBy(_.userId), pattern)
 
-    patternStream.select(new MySelectFunction()).print()
+    //使用PatternSelectFunction
+    patternStream.select(new MySelectFunction()).print("PatternSelectFunction")
+    //使用PatternProcessFunction
+    patternStream.process(new MySelectFunction1()).print("PatternProcessFunction")
 
 
 
@@ -51,9 +57,20 @@ object LoginFailWithCEP {
   }
 }
 
+
 case class MySelectFunction() extends PatternSelectFunction[LoginEvent,util.List[LoginEvent]] {
   override def select(map: util.Map[String, util.List[LoginEvent]]): util.List[LoginEvent] = {
     val events: util.List[LoginEvent] = map.get("firstFail")
     events
+  }
+}
+
+
+class MySelectFunction1() extends PatternProcessFunction[LoginEvent,util.List[LoginEvent]]{
+
+  //getRuntimeContext.getState()
+
+  override def processMatch(map: util.Map[String, util.List[LoginEvent]], ctx: PatternProcessFunction.Context, out: Collector[util.List[LoginEvent]]): Unit = {
+    out.collect(map.get("firstFail"))
   }
 }
