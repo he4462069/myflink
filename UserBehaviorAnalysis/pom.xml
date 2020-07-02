@@ -12,7 +12,7 @@
     <artifactId>UserBehaviorAnalysis</artifactId>
 
 
-    <properties>
+    <!--<properties>
         <flink.version>1.10.0</flink.version>
         <scala.binary.version>2.11</scala.binary.version>
         <kafka.version>0.11.0.0</kafka.version>
@@ -39,7 +39,12 @@
             <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
+    </dependencies>-->
 
     <build>
         <plugins>
