@@ -30,8 +30,14 @@ object LoginFailWithCEP {
       })
 
     //定义匹配模式
-    val pattern: Pattern[LoginEvent, LoginEvent] = Pattern.begin[LoginEvent]("firstFail").where(_.eventType == "fail")
-      .next("secondFail").where(_.eventType == "fail")
+    //  next():严格近邻
+    //  followedBy():宽松近邻
+    //  followedByAny()：可重复
+    //  notNext() 如果不希望一个事件类型紧接着另一个类型出现。
+    //  notFollowedBy() 不希望两个事件之间任何地方出现该事件。
+    //  时间约束：pattern.within（Time.seconds(10)）方法定义模式应在10秒内发生。
+    val pattern: Pattern[LoginEvent, LoginEvent] = Pattern.begin[LoginEvent]("firstFail").where(_.eventType == "fail").times(2).consecutive()
+      //.next("secondFail").where(_.eventType == "fail")
       .within(Time.seconds(2))
 
     val patternStream: PatternStream[LoginEvent] = CEP.pattern(loginEventStream.keyBy(_.userId), pattern)
@@ -45,10 +51,9 @@ object LoginFailWithCEP {
   }
 }
 
-case class MySelectFunction() extends PatternSelectFunction[LoginEvent,(Long,String,String)] {
-  override def select(map: util.Map[String, util.List[LoginEvent]]): (Long, String, String) = {
-    val event1: LoginEvent = map.get("firstFail").iterator().next()
-    val event2: LoginEvent = map.get("secondFail").iterator().next()
-    (event1.userId,event2.ip,event1.eventType)
+case class MySelectFunction() extends PatternSelectFunction[LoginEvent,util.List[LoginEvent]] {
+  override def select(map: util.Map[String, util.List[LoginEvent]]): util.List[LoginEvent] = {
+    val events: util.List[LoginEvent] = map.get("firstFail")
+    events
   }
 }
