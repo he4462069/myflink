@@ -16,6 +16,16 @@ object sqlFirstDemo {
 
     val streamTableEnv: StreamTableEnvironment = StreamTableEnvironment.create(env, settings)
 
+    /*streamTableEnv
+      .connect(new FileSystem().path("D:\\IdeaProjects\\myflink\\streamprocessdemo\\src\\main\\resources\\sqlDemoCsv.txt"))
+      .withFormat(new Csv)
+      .withSchema(new Schema()
+        .field("id",DataTypes.STRING())
+        .field("timestamp",DataTypes.BIGINT())
+        .field("temperature",DataTypes.DOUBLE()))
+      .inAppendMode()
+      .createTemporaryTable("MyTable")*/
+
     //根据文件系统的csv文件创建表
     streamTableEnv.connect( new FileSystem().path("D:\\IdeaProjects\\myflink\\streamprocessdemo\\src\\main\\resources\\sqlDemoCsv.txt"))
       .withFormat(new Csv())
@@ -25,8 +35,11 @@ object sqlFirstDemo {
         .field("temperature",DataTypes.DOUBLE()))
       .createTemporaryTable("inputTable")
 
+
+
     val queryTable: Table = streamTableEnv.sqlQuery("select *  from inputTable")
     val datastream: DataStream[(String, Long, Double)] = queryTable.toAppendStream[(String, Long, Double)]
+
 
     val table: Table = streamTableEnv.fromDataStream(datastream, 'id, 'temperature,'processtime.proctime)
 
