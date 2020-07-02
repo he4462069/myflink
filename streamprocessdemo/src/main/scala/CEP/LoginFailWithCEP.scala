@@ -45,10 +45,19 @@ object LoginFailWithCEP {
 
     val patternStream: PatternStream[LoginEvent] = CEP.pattern(loginEventStream.keyBy(_.userId), pattern)
 
+    val lateDataOutputTag = OutputTag[LoginEvent]("late-data")
+
+    val resultStream: DataStream[util.List[LoginEvent]] = patternStream.sideOutputLateData(lateDataOutputTag).process(new MySelectFunction1())
+
+    resultStream.print("resultStream")
+
+    val lateData: DataStream[LoginEvent] = resultStream.getSideOutput(lateDataOutputTag)
+    lateData.print("lateData")
+
     //使用PatternSelectFunction
-    patternStream.select(new MySelectFunction()).print("PatternSelectFunction")
+    //patternStream.select(new MySelectFunction()).print("PatternSelectFunction")
     //使用PatternProcessFunction
-    patternStream.process(new MySelectFunction1()).print("PatternProcessFunction")
+    //patternStream.process(new MySelectFunction1()).print("PatternProcessFunction")
 
 
 
@@ -74,3 +83,4 @@ class MySelectFunction1() extends PatternProcessFunction[LoginEvent,util.List[Lo
     out.collect(map.get("firstFail"))
   }
 }
+
