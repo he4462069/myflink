@@ -14,11 +14,10 @@ class MyProcessWindowFunction extends ProcessWindowFunction[SensorReading,(Strin
     var sum:Double=0
     var cnt:Int = 0
 
-    elements.foreach{data =>
+    for (data <- elements.toArray) {
       sum = sum +data.temperature
       cnt = cnt +1
     }
-
 
     val avg = sum/cnt
 
@@ -32,13 +31,13 @@ object MyProcessWindowFunction{
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
 
-    val inputStream: DataStream[SensorReading] = env.readTextFile("D:\\IdeaProjects\\myflink\\streamprocessdemo\\src\\main\\resources\\sqlDemoCsv.txt")
+    val inputStream: DataStream[SensorReading] = env.readTextFile("file:///D:\\IdeaProjects\\myflink\\streamprocessdemo\\src\\main\\resources\\sqlDemoCsv.txt")
       .map { data =>
         val strings: Array[String] = data.split(",")
         SensorReading(strings(0).trim, strings(1).trim.toLong, strings(2).trim.toDouble)
       }
 
-    val value: DataStream[(String, Double, Long)] = inputStream.keyBy(_.id).timeWindow(Time.milliseconds(10)).process(new MyProcessWindowFunction())
+    val value: DataStream[(String, Double, Long)] = inputStream.keyBy(_.id).timeWindow(Time.milliseconds(20)).process(new MyProcessWindowFunction())
     value.print()
 
     env.execute("")

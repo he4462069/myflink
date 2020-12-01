@@ -1,15 +1,12 @@
 package UDF
 
-import java.util
-
 import bean.SensorReading
-import org.apache.calcite.rel.`type`.{RelDataType, RelDataTypeFactory}
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
-import org.apache.flink.table.api.{EnvironmentSettings, Table}
 import org.apache.flink.table.api.scala._
+import org.apache.flink.table.api.{EnvironmentSettings, Table}
 import org.apache.flink.table.functions.ScalarFunction
 import org.apache.flink.types.Row
 

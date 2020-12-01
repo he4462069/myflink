@@ -12,7 +12,7 @@ class MyAggregateFunction extends AggregateFunction[SensorReading,(String,Double
   //向累加器中累加数据
   override def add(in: SensorReading, acc: (String,Double, Int)): (String,Double, Int) = (in.id,in.temperature+acc._2,acc._3+1)
 
-  //merge各个累加器中的数据
+  //merge是在session窗口时才会用到
   override def merge(acc: (String,Double, Int), acc1: (String,Double, Int)): (String,Double, Int) = (acc._1,acc1._2+acc._2,acc1._3+acc._3)
   //获取聚合结果
   override def getResult(acc: (String,Double, Int)):(String, Double) = (acc._1,acc._2/acc._3)
@@ -30,6 +30,8 @@ object MyAggregateFunction{
 
     val value: DataStream[(String, Double)] = inputStream.keyBy("id").timeWindow(Time.milliseconds(50)).aggregate(new MyAggregateFunction)
     value.print()
+
+
     env.execute("")
   }
 }

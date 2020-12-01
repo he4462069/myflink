@@ -41,6 +41,8 @@ object SideOutputTest {
  * @param point
  */
 class FreezingMonitor(point :Double) extends ProcessFunction[SensorReading,String]{
+
+
   //定义一个测输出流标签
   lazy val freezingAlarmOutput:OutputTag[String] = new OutputTag[String]("freezing-alarm")
 

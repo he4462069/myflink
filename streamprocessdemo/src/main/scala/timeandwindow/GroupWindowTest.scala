@@ -7,8 +7,8 @@ import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
-import org.apache.flink.table.api.{EnvironmentSettings, Table, Tumble}
 import org.apache.flink.table.api.scala._
+import org.apache.flink.table.api.{EnvironmentSettings, Table}
 
 /**
  * group窗口
@@ -26,17 +26,15 @@ object GroupWindowTest {
 
     val streamTableEnv: StreamTableEnvironment = StreamTableEnvironment.create(env, settings)
 
-    val inputStream: DataStream[SensorReading] = env.readTextFile("D:\\IdeaProjects\\myflink\\streamprocessdemo\\src\\main\\resources\\sqlDemoCsv.txt")
+    val streamWithTs: DataStream[SensorReading] = env.readTextFile("D:\\IdeaProjects\\myflink\\streamprocessdemo\\src\\main\\resources\\sqlDemoCsv.txt")
       .filter(_.nonEmpty).map { data =>
-      val strings: Array[String] = data.split(",")
-      SensorReading(strings(0).trim, strings(1).trim.toLong, strings(2).trim.toDouble)
-    }
-
-    val streamWithTs: DataStream[SensorReading] = inputStream.assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[SensorReading](Time.milliseconds(5)) {
-      override def extractTimestamp(t: SensorReading): Long = {
-        t.timestamp
-      }
-    })
+        val strings: Array[String] = data.split(",")
+        SensorReading(strings(0).trim, strings(1).trim.toLong, strings(2).trim.toDouble)
+      }.assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[SensorReading](Time.milliseconds(5)) {
+        override def extractTimestamp(t: SensorReading): Long = {
+          t.timestamp
+        }
+      })
 
     streamTableEnv.createTemporaryView("inputTable",streamWithTs,'id, 'timestamp.rowtime as 'ts, 'temperature as 'temp)
 

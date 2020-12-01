@@ -32,8 +32,8 @@ object AllowedLateTest {
       .keyBy(_._1)
       // [0,5),...
       .timeWindow(Time.seconds(5))
-      // 水位线超过 窗口结束时间 窗口闭合计算，但不销毁
-      // 水位线超过 窗口结束时间 + allowed lateness，窗口更新结果并销毁
+      // 水位线超过窗口结束时间，窗口闭合计算，但不销毁
+      // 水位线超过窗口结束时间 + allowed lateness，窗口更新结果并销毁
       .allowedLateness(Time.seconds(5))
       .process(new MyAllowedLateProcess)
     s.print()

@@ -4,19 +4,18 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util
 
-import bean.{ApacheLogEvent, ItemViewCount, UrlViewCount}
+import bean.{ApacheLogEvent, UrlViewCount}
 import org.apache.flink.api.common.functions.AggregateFunction
 import org.apache.flink.api.common.restartstrategy.RestartStrategies
 import org.apache.flink.api.common.state.{ListState, ListStateDescriptor}
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
-import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.scala.function.WindowFunction
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
-import org.apache.flink.table.runtime.aggregate.TimeWindowPropertyCollector
+import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.util.Collector
 
 import scala.collection.mutable.ListBuffer

@@ -16,7 +16,7 @@ class KeyedProcessFunctionTest extends KeyedProcessFunction[String,SensorReading
 
   //用来保存当前定时器的时间戳
   lazy val currentTimer:ValueState[Long] = getRuntimeContext.getState[Long](new ValueStateDescriptor[Long]("timer", classOf[Long]))
-  getRuntimeContext.getMapState[String,String](new MapStateDescriptor[String,String]("adad",classOf[String],classOf[String]))
+  //getRuntimeContext.getMapState[String,String](new MapStateDescriptor[String,String]("adad",classOf[String],classOf[String]))
 
   override def processElement(element: SensorReading, ctx: KeyedProcessFunction[String, SensorReading, String]#Context, out: Collector[String]): Unit = {
 

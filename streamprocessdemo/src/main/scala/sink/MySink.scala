@@ -1,9 +1,8 @@
 package sink
 
 import bean.SensorReading
-import org.apache.flink.streaming.api.functions.sink.SinkFunction
+import org.apache.flink.streaming.api.functions.sink.{RichSinkFunction, SinkFunction}
 
-class MySink extends SinkFunction[SensorReading]{
-
+class MySink extends RichSinkFunction[SensorReading]{
 
 }

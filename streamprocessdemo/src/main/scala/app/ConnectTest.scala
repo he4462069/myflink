@@ -1,7 +1,10 @@
 package app
 
 import bean.SensorReading
+import org.apache.flink.api.common.functions.JoinFunction
 import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
+import org.apache.flink.streaming.api.windowing.time.Time
 import source.MySource
 
 /**
@@ -9,8 +12,6 @@ import source.MySource
  */
 object ConnectTest {
   def main(args: Array[String]): Unit = {
-
-
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     val stream: DataStream[SensorReading] = env.addSource(new MySource())
@@ -21,12 +22,13 @@ object ConnectTest {
     val lowStream: DataStream[SensorReading] = splitedStream.select("low")
     val warnStream: DataStream[(String, Double)] = highStream.map(data => (data.id, data.temperature))
 
+    //流的合并
     val connectedStream: ConnectedStreams[(String, Double), SensorReading] = warnStream.connect(lowStream)
-
     val coMap: DataStream[Product] = connectedStream.map(
       warnStream => (warnStream._1, warnStream._2, "highWarning"),
       low => (low.id, "health")
     )
+
 
     coMap.print.setParallelism(1)
 
@@ -34,3 +36,4 @@ object ConnectTest {
 
   }
 }
+
