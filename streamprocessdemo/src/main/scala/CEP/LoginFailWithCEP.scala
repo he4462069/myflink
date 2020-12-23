@@ -39,7 +39,9 @@ object LoginFailWithCEP {
     //  notNext() 如果不希望一个事件类型紧接着另一个类型出现。
     //  notFollowedBy() 不希望两个事件之间任何地方出现该事件。
     //  时间约束：pattern.within（Time.seconds(10)）方法定义模式应在10秒内发生。
-    val pattern: Pattern[LoginEvent, LoginEvent] = Pattern.begin[LoginEvent]("firstFail").where(_.eventType == "fail").times(2).consecutive()
+    val pattern: Pattern[LoginEvent, LoginEvent] = Pattern
+      .begin[LoginEvent]("firstFail").where(_.eventType == "fail").times(2)
+      .consecutive()
       //.next("secondFail").where(_.eventType == "fail")
       .within(Time.seconds(2))
 
@@ -67,7 +69,7 @@ object LoginFailWithCEP {
 }
 
 
-case class MySelectFunction() extends PatternSelectFunction[LoginEvent,util.List[LoginEvent]] {
+class MySelectFunction() extends PatternSelectFunction[LoginEvent,util.List[LoginEvent]] {
   override def select(map: util.Map[String, util.List[LoginEvent]]): util.List[LoginEvent] = {
     val events: util.List[LoginEvent] = map.get("firstFail")
     events

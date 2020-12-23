@@ -81,7 +81,5 @@ class MyCoGroupFunction() extends CoGroupFunction[SensorReading,SensorReading,St
         out.collect(leftEle.id+" "+ "empty")
       }
     }
-
-
   }
 }

@@ -1,7 +1,7 @@
 package function
 
 import bean.SensorReading
-import org.apache.flink.api.common.functions.AbstractRichFunction
+import org.apache.flink.api.common.functions.{AbstractRichFunction, CoGroupFunction}
 import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.ProcessFunction
@@ -68,6 +68,7 @@ object TxMatch {
 
 }
 
+
 class TxMatchDetection extends KeyedCoProcessFunction[String, OrderEvent, ReceiptEvent,(OrderEvent, ReceiptEvent)]{
 
   lazy  private val receiptState: ValueState[ReceiptEvent] = getRuntimeContext.getState(new ValueStateDescriptor[ReceiptEvent]("receipt-state", classOf[ReceiptEvent]))
@@ -103,11 +104,13 @@ class TxMatchDetection extends KeyedCoProcessFunction[String, OrderEvent, Receip
     val unmatchedReceipt = new OutputTag[ReceiptEvent]("unmatchedReceipts")
 
     if (ordertState.value() != null) {
-      ctx.output(unmatchedOrder,ordertState.value())
+      //ctx.output(unmatchedOrder,ordertState.value())
+      out.collect((ordertState.value(),null))
     }
 
     if (receiptState.value() != null) {
-      ctx.output(unmatchedReceipt,receiptState.value())
+      //ctx.output(unmatchedReceipt,receiptState.value())
+      out.collect((null,receiptState.value()))
     }
     ordertState.clear()
     receiptState.clear()

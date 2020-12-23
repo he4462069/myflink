@@ -16,27 +16,27 @@ import source.SensorSource
  */
 object MyElasticsearchSink {
   def main(args: Array[String]): Unit = {
-    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
-    val input: DataStream[SensorReading] = env.addSource(new SensorSource)
-
-    val hosts = new util.ArrayList[HttpHost]()
-    hosts.add(new HttpHost("localhost",9200))
-
-    val esSink: ElasticsearchSink[SensorReading] = new ElasticsearchSink.Builder[SensorReading](hosts, new EsSinkFunction).build()
-    input.addSink(esSink)
-
-    env.execute("")
+//    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
+//    val input: DataStream[SensorReading] = env.addSource(new SensorSource)
+//
+//    val hosts = new util.ArrayList[HttpHost]()
+//    hosts.add(new HttpHost("localhost",9200))
+//
+//    val esSink: ElasticsearchSink[SensorReading] = new ElasticsearchSink.Builder[SensorReading](hosts, new EsSinkFunction).build()
+//    input.addSink(esSink)
+//
+//    env.execute("")
   }
 }
 
 class EsSinkFunction extends ElasticsearchSinkFunction[SensorReading]{
   override def process(t: SensorReading, runtimeContext: RuntimeContext, requestIndexer: RequestIndexer): Unit = {
-    println("saving data: " + t)
-    val map = new util.HashMap[String, String]()
-    map.put("data", t.toString)
-    val indexRequest = Requests.indexRequest().index("sensor").`type`("readingData").source(map)
-    requestIndexer.add(indexRequest)
-    println("saved successfully")
+//    println("saving data: " + t)
+//    val map = new util.HashMap[String, String]()
+//    map.put("data", t.toString)
+//    val indexRequest = Requests.indexRequest().index("sensor").`type`("readingData").source(map)
+//    requestIndexer.add(indexRequest)
+//    println("saved successfully")
 
   }
 }
