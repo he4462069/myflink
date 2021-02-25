@@ -60,7 +60,7 @@ object AdStatisticsByGeo {
       val curCount = countState.value()
       // 如果是第一次处理，注册一个定时器，每天 00：00 触发清除
       if( curCount == 0 ){
-        val ts = (ctx.timerService().currentProcessingTime() / (24*60*60*1000) + 1) * (24*60*60*1000)
+        val ts = (ctx.timerService().currentProcessingTime() / (24*60*60*1000) + 1) * (24*60*60*1000) -8*24*60*60*1000
         resetTime.update(ts)
         ctx.timerService().registerProcessingTimeTimer(ts)
       }
