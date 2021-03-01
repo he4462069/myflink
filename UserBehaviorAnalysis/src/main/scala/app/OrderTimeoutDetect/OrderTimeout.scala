@@ -1,8 +1,10 @@
+import org.apache.flink.cep.PatternSelectFunction
 import org.apache.flink.cep.scala.CEP
 import org.apache.flink.cep.scala.pattern.Pattern
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
+
 import scala.collection._
 
 case class OrderEvent(orderId: Long, eventType: String, eventTime: Long)
@@ -23,10 +25,9 @@ object OrderTimeout {
       .assignAscendingTimestamps(_.eventTime * 1000)
 
     // 定义一个带匹配时间窗口的模式
-    val orderPayPattern = Pattern.begin[OrderEvent]("begin")
-      .where(_.eventType == "create")
-      .followedBy("follow")
-      .where(_.eventType == "pay")
+    val orderPayPattern = Pattern
+      .begin[OrderEvent]("begin").where(_.eventType == "create")
+      .followedBy("follow").where(_.eventType == "pay")
       .within(Time.minutes(15))
 
     // 定义一个输出标签
@@ -56,3 +57,6 @@ object OrderTimeout {
     env.execute("Order Timeout Detect Job")
   }
 }
+
+
+class Myaaa extends PatternSelectFunction[]

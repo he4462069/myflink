@@ -1,7 +1,17 @@
 package app.TxMatchDetect
 
-import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
+import java.util.concurrent.TimeUnit
+
+import org.apache.flink.api.common.restartstrategy.RestartStrategies
+import org.apache.flink.api.common.state.{StateTtlConfig, ValueState, ValueStateDescriptor}
+import org.apache.flink.api.common.time.Time
+import org.apache.flink.api.common.typeinfo.{TypeHint, TypeInformation}
+import org.apache.flink.contrib.streaming.state.RocksDBStateBackend
+import org.apache.flink.runtime.state.StateBackend
+import org.apache.flink.runtime.state.filesystem.FsStateBackend
+import org.apache.flink.runtime.state.memory.MemoryStateBackend
 import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.functions.co.CoProcessFunction
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.util.Collector
@@ -15,12 +25,24 @@ object TxMatch {
     env.setParallelism(1)
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
+//    val ttlConfig=StateTtlConfig.newBuilder(Time.seconds(1))
+//      .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
+//      .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
+//      .build()
+//    val descripe = new ValueStateDescriptor("avgState", TypeInformation.of(new TypeHint[(Long, Long)] {}))
+//    descripe.enableTimeToLive(ttlConfig)
+
+//    RocksDB状态后端设置
+//    val stateBackend:StateBackend=new RocksDBStateBackend("hdfs://namenode:9000/flink/checkpoint",true)
+//    env.setStateBackend(stateBackend)
+//    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, Time.of(10, TimeUnit.SECONDS)))
+
+
     val orderEventStream = env.readTextFile("YOUR_PATH\\resources\\OrderLog.csv")
       .map( data => {
         val dataArray = data.split(",")
         OrderEvent(dataArray(0).toLong, dataArray(1), dataArray(2), dataArray(3).toLong)
       })
-
       .filter(_.txId != "")
       .assignAscendingTimestamps(_.eventTime * 1000L)
       .keyBy(_.txId)
@@ -57,7 +79,7 @@ object TxMatch {
         out.collect((pay, receipt))
       } else{
         payState.update(pay)
-        ctx.timerService().registerEventTimeTimer(pay.eventTime * 1000L)
+        ctx.timerService().registerEventTimeTimer(pay.eventTime * 1000L + 5000L)
       }
     }
 
@@ -69,7 +91,7 @@ object TxMatch {
         out.collect((payment, receipt))
       } else{
         receiptState.update(receipt)
-        ctx.timerService().registerEventTimeTimer(receipt.eventTime * 1000L)
+        ctx.timerService().registerEventTimeTimer(receipt.eventTime * 1000L + 5000L)
       }
     }
 
@@ -84,6 +106,8 @@ object TxMatch {
       receiptState.clear()
     }
   }
+
+
 
 }
 

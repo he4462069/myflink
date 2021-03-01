@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.windowing.time.Time
 import scala.collection._
 
 
-case class LoginEvent(userId: Long, ip: String, eventType: String, eventTime: Long)
+//case class LoginEvent(userId: Long, ip: String, eventType: String, eventTime: Long)
 
 
 object LoginFailWithCep {

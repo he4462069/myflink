@@ -24,8 +24,8 @@ object HotItems {
     env.setParallelism(1)
 
     env.setStateBackend(new FsStateBackend("file:///D:\\IdeaProjects\\myflink\\UserBehaviorAnalysis\\src\\main\\resources\\ckpoint"))
-    env.enableCheckpointing(1000*30)
-    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.AT_LEAST_ONCE)
+    env.enableCheckpointing(1000*30)   //默认为CheckpointingMode.EXACTLY_ONCE
+    //env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.AT_LEAST_ONCE)
     env.getCheckpointConfig.setMaxConcurrentCheckpoints(3)
     env.getCheckpointConfig.setCheckpointTimeout(1000*60*3)
     env.getCheckpointConfig.setPreferCheckpointForRecovery(true)

@@ -20,8 +20,7 @@ object BloomFilterDemo {
     urls.foreach{url =>
       if (bloomFilter.mightContain(url)) { // 用重复的 URL
         println("URL 已存在了：" + url)
-      }
-      else { // 将 URL 存储在布隆过滤器中
+      } else { // 将 URL 存储在布隆过滤器中
         bloomFilter.put(url)
       }
     }
